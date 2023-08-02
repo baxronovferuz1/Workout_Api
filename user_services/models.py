@@ -38,3 +38,32 @@ class User(AbstractUser):
 
     class Meta:
         db_table = 'auth_user'
+        
+
+class Post(models.Model):
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='posts'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def comments_count(self):
+        return self.comments.count()
+
+    @property
+    def like_count(self):
+        return self.likes.count()
+    
+    @property
+    def liked_by_users(self):
+        return [like.user for like in self.likes.all()]
+    
+    def __str__(self):
+        return self.title
+    
+    @property
+    def files(self):
+        return self.upload()
