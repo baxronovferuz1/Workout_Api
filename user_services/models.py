@@ -1,69 +1,47 @@
-# from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.db import models
 
-# # Create your models here.
-
-
-# from django.db import models
-# from django.contrib.auth.models import AbstractUser
-# from django.contrib.auth import get_user_model
-# import uuid
-
-
-
-# # class TimeStamp(models.Model):
-# #     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-# #     time_stamp=models.DateTimeField(auto_now=True)
-# #     created_time=models.DateField(auto_now_add=True)
-
-# #     class Meta:
-# #         abstract=True
-
-
-# class User(AbstractUser):
-#     #for change password
-#     #current_password=models.CharField(max_length=100, null=True)
-#     #new_password=models.CharField(max_length=100, null=True) """
-
-
-#     @property
-#     def followers_count(self):
-#         return self.followers.count()
-
-#     @property
-#     def following_count(self):
-#         return self.followings.count()    
-
-#     def __str__(self):
-#         return self.username
-
-#     class Meta:
-#         db_table = 'auth_user'
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('The Email field must be set')
         
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
-# class Post(models.Model):
-#     title = models.CharField(max_length=100)
-#     content = models.TextField()
-#     author = models.ForeignKey(
-#         User, on_delete=models.CASCADE, related_name='posts'
-#     )
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
 
-#     @property
-#     def comments_count(self):
-#         return self.comments.count()
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True')
 
-#     @property
-#     def like_count(self):
-#         return self.likes.count()
-    
-#     @property
-#     def liked_by_users(self):
-#         return [like.user for like in self.likes.all()]
-    
-#     def __str__(self):
-#         return self.title
-    
-#     @property
-#     def files(self):
-#         return self.upload()
+        return self.create_user(email, password, **extra_fields)
+
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
+    is_staff = models.BooleanField(default=False)
+    is_teacher = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'
+
+class Teacher(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+
+class NormalUser(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    following = models.ManyToManyField(Teacher, related_name='followers')
+
+class Post(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
