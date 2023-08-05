@@ -11,3 +11,9 @@ class TeacherListCreateView(generics.ListCreateAPIView):
     queryset=Teacher.objects.all()
     serializer_class=TeacherSerializer
     permission_classes=[IsAuthenticated,IsTeacherOrAdmin]
+
+
+class TeacherDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset=Teacher.objects.all()
+    serializer_class=TeacherSerializer
+    permission_classes=[IsAuthenticated,IsTeacherOrAdmin]
