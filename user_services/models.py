@@ -43,21 +43,28 @@ class Teacher(models.Model):
     
 
 
-class NormalUser(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    # following = models.ManyToManyField(Teacher, related_name='followers')
+# class NormalUser(models.Model):
+#     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+#     # following = models.ManyToManyField(Teacher, related_name='followers')
 
 
-    @property
-    def following_count(self):
-        return self.following.count()
+#     @property
+#     def following_count(self):
+#         return self.following.count()
     
-    def __str__(self):
-        return self.username
+#     def __str__(self):
+#         return self.username
 
-class Post(models.Model):
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    title=models.CharField(max_length=300)
-    video_file=models.FileField(upload_to='videos/')
-    created_at = models.DateTimeField(auto_now_add=True)
+# class Post(models.Model):
+#     author = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+#     title=models.CharField(max_length=300)
+#     video_file=models.FileField(upload_to='videos/')
+#     created_at = models.DateTimeField(auto_now_add=True)
 
+
+#     def __str__(self) -> str:
+#         return self.title
+
+
+#           i will comment ,like_count,liked_by_user and files propertys
+        #   i will create like,comment,follow,file classes
