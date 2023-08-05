@@ -36,12 +36,20 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 class Teacher(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
 
+
+    @property
+    def followers_count(self):
+        return self.followers.count()
+    
+
+
 class NormalUser(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     following = models.ManyToManyField(Teacher, related_name='followers')
 
 class Post(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    video=models.
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
