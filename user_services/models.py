@@ -45,11 +45,19 @@ class Teacher(models.Model):
 
 class NormalUser(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    following = models.ManyToManyField(Teacher, related_name='followers')
+    # following = models.ManyToManyField(Teacher, related_name='followers')
+
+
+    @property
+    def following_count(self):
+        return self.following.count()
+    
+    def __str__(self):
+        return self.username
 
 class Post(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    video=models.
-    content = models.TextField()
+    title=models.CharField(max_length=300)
+    video_file=models.FileField(upload_to='videos/')
     created_at = models.DateTimeField(auto_now_add=True)
 
