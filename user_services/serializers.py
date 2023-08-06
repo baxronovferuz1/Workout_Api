@@ -21,4 +21,9 @@ class PostSerializer(serializers.ModelSerializer):
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model=Like
-        fields=('id', 'user', 'post')
+        fields=('email', 'user', 'post')
+
+class FollowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Follow
+        fields=('email', 'followers', 'followings')
