@@ -27,3 +27,8 @@ class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         model=Follow
         fields=('id', 'followers', 'followings')
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Comment
+        fields=['author','definition','create_at']
