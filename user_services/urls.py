@@ -1,6 +1,6 @@
 from django.urls import path,include
-from .views import TeacherListCreateView,TeacherDetailView,NormalUserDetailView,PostListCreateView,PostDetailView,LikeDetailView,LikeListCreateView
-
+# from .views import TeacherListCreateView,TeacherDetailView,NormalUserDetailView,PostListCreateView,PostDetailView,LikeDetailView,LikeListCreateView
+from .views import *
 
 
 urlpatterns=[
@@ -9,5 +9,6 @@ urlpatterns=[
     path("post/", PostListCreateView.as_view()),
     path("likes/",LikeListCreateView.as_view()),
     # path("likes/<int:pk>/", LikeDetailView.as_view())
+    path("follow/",FollowListCreateView.as_view()),
 ]
 
