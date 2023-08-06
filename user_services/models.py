@@ -123,3 +123,18 @@ class Follow(models.Model):
 
     class Meta:
         unique_together = ('followers', 'followings')
+
+
+class Comment(models.Model):
+    author=models.ForeignKey(NormalUser, on_delete=models.CASCADE, related_name='author')
+    definition=models.CharField(max_length=200)
+    post=models.ForeignKey(Post, on_delete=models.CASCADE)
+    create_at=models.DateTimeField(auto_created=True)
+
+
+    class Meta:
+        ordering = ['create_at']
+
+
+    def __str__(self) -> str:
+        return f"{self.post} commented by {self.author}"
