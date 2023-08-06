@@ -3,8 +3,8 @@ from django.shortcuts import render
 # Create your views here.
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from .models import Teacher,NormalUser
-from .serializers import TeacherSerializer,NormalUserSerializer
+from .models import Teacher,NormalUser,Post
+from .serializers import TeacherSerializer,NormalUserSerializer,PostSerializer
 from .permissions import IsTeacherOrAdmin,IsNormalUser
 
 class TeacherListCreateView(generics.ListCreateAPIView):
@@ -26,3 +26,13 @@ class NormalUserDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes=[IsAuthenticated,IsNormalUser]
 
 
+class PostListCreateView(generics.ListCreateAPIView):
+    queryset=Post.objects.all()
+    serializer_class=PostSerializer
+    permission_classes=[IsAuthenticated,IsTeacherOrAdmin]
+
+
+class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset=Post.objects.all()
+    serializer_class=PostSerializer
+    permission_classes=[IsAuthenticated,IsTeacherOrAdmin]
