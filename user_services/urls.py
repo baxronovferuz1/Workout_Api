@@ -10,5 +10,6 @@ urlpatterns=[
     path("likes/",LikeListCreateView.as_view()),
     # path("likes/<int:pk>/", LikeDetailView.as_view())
     path("follow/",FollowListCreateView.as_view()),
+    path("comment/", CommentListCreateView.as_view()),
 ]
 
