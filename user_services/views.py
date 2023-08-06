@@ -19,11 +19,6 @@ class TeacherDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes=[IsAuthenticated,IsTeacherOrAdmin]
 
 
-class NormalUserListCreateView(generics.ListCreateAPIView):
-    queryset=NormalUser.objects.all()
-    serializer_class=NormalUserSerializer
-    permission_classes=[IsAuthenticated,IsNormalUser]
-
 
 class NormalUserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset=NormalUser.objects.all()
