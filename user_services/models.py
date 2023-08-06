@@ -35,6 +35,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 class Teacher(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    bio=models.TextField(max_length=250)
+    profile_photo=models.ImageField(upload_to='profile_photos/', blank=True, null=True)
 
 
     @property
