@@ -1,6 +1,6 @@
 from django.contrib import admin
 
 # Register your models here.
-from .views import TeacherListCreateView,TeacherDetailView
+from .models import Teacher
 
-admin.site.register(TeacherListCreateView)
+admin.site.register(Teacher)
