@@ -24,3 +24,5 @@ class NormalUserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset=NormalUser.objects.all()
     serializer_class=NormalUserSerializer
     permission_classes=[IsAuthenticated,IsNormalUser]
+
+
