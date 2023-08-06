@@ -59,15 +59,36 @@ class NormalUser(models.Model):
     def __str__(self):
         return self.username
 
-# class Post(models.Model):
-#     author = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-#     title=models.CharField(max_length=300)
-#     video_file=models.FileField(upload_to='videos/')
-#     created_at = models.DateTimeField(auto_now_add=True)
+class Post(models.Model):
+    author = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    title=models.CharField(max_length=300)
+    video_file=models.FileField(upload_to='videos/')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+
+    @property
+    def comment_count(self):
+        return self.comments.count()
+    
+    @property
+    def like_count(self):
+        return self.likes.count()
+
+    
+    @property
+    def liked_by_user(self):
+        return [like.user for like in self.likes.all()]
+    
+    @property
+    def files(self):
+        return self.upload()
 
 
-#     def __str__(self) -> str:
-#         return self.title
+    def __str__(self) -> str:
+        return self.title
+    
+
+    
 
 
 #           i will comment ,like_count,liked_by_user and files propertys

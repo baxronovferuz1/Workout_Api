@@ -11,4 +11,4 @@ class TeacherSerializer(serializers.ModelSerializer):
 class NormalUserSerializer(serializers.ModelSerializer):
     class Meta:
         model=NormalUser
-        field='__all__'
+        fields='__all__'
