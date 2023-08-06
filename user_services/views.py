@@ -4,7 +4,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from .models import Teacher,NormalUser,Post
-from .serializers import TeacherSerializer,NormalUserSerializer,PostSerializer
+from .serializers import TeacherSerializer,NormalUserSerializer,PostSerializer,LikeSerializer
 from .permissions import IsTeacherOrAdmin,IsNormalUser
 
 class TeacherListCreateView(generics.ListCreateAPIView):

@@ -93,3 +93,21 @@ class Post(models.Model):
 
 #           i will comment ,like_count,liked_by_user and files propertys
         #   i will create like,comment,follow,file classes
+
+
+
+class Like(models.Model):
+    user = models.ForeignKey(
+        NormalUser, on_delete=models.CASCADE, related_name='likes'
+    )
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name='likes'
+    )
+    # created_at = models.DateTimeField(auto_now_add=True)
+    # updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.user} liked {self.post}'
+
+    class Meta:
+        unique_together = ('user', 'post')
