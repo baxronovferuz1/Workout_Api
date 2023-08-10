@@ -1,10 +1,10 @@
 from django.shortcuts import render
 
 # Create your views here.
-from rest_framework import generics
+from rest_framework import generics,viewsets
 from rest_framework.permissions import IsAuthenticated
-from .models import Teacher,NormalUser,Post,Like,Follow,Comment
-from .serializers import TeacherSerializer,NormalUserSerializer,PostSerializer,LikeSerializer,FollowSerializer,CommentSerializer
+from .models import Teacher,NormalUser,Post,Like,Follow,Comment,Message
+from .serializers import TeacherSerializer,NormalUserSerializer,PostSerializer,LikeSerializer,FollowSerializer,CommentSerializer,MessageSerializer
 from .permissions import IsTeacherOrAdmin,IsNormalUser
 
 class TeacherListCreateView(generics.ListCreateAPIView):
@@ -81,6 +81,13 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset=Comment.objects.all()
     serializer_class=CommentSerializer
     permission_classes=[IsAuthenticated]
+
+
+class MessageViewSet(viewsets.ModelViewSet):
+    queryset=Message.objects.all()
+    serializer_class=MessageSerializer
+    permission_classes=[IsAuthenticated]
+
 
 
 
