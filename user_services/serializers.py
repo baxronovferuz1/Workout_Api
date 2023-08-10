@@ -32,3 +32,9 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model=Comment
         fields=['author','definition','create_at']
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Message
+        fields=('id','author_message','recipient','content','sent_time')
