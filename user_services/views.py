@@ -90,6 +90,14 @@ class MessageViewSet(viewsets.ModelViewSet):
 
     def perform_class(self,serializer):
         return serializer.save(sender=self.request.user)
+    
+    def get_queryset(self):
+        user=self.request.user
+        return Message.objects.filter(sender=user)
+    
+
+    
+
 
 
 
