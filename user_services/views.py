@@ -88,6 +88,9 @@ class MessageViewSet(viewsets.ModelViewSet):
     serializer_class=MessageSerializer
     permission_classes=[IsAuthenticated]
 
+    def perform_class(self,serializer):
+        return serializer.save(sender=self.request.user)
+
 
 
 
