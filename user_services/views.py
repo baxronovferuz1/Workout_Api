@@ -89,11 +89,11 @@ class MessageViewSet(viewsets.ModelViewSet):
     permission_classes=[IsAuthenticated]
 
     def perform_class(self,serializer):
-        return serializer.save(sender=self.request.user)
+        return serializer.save(author_message=self.request.user)
     
     def get_queryset(self):
         user=self.request.user
-        return Message.objects.filter(sender=user)
+        return Message.objects.filter(author_message=user)
     
 
     
