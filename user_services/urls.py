@@ -11,6 +11,7 @@ urlpatterns=[
     # path("likes/<int:pk>/", LikeDetailView.as_view())
     path("follow/",FollowListCreateView.as_view()),
     path("comment/", CommentListCreateView.as_view()),
-    path("messages/",MessageViewSet.as_view()),
+    # path("messages/",MessageViewSet.as_view()),
+    path("messages/", MessageViewSet.as_view({'get': 'list', 'post': 'create'})),
 ]
 
