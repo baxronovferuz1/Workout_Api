@@ -6,7 +6,9 @@ from django.db import models
 
 # User=get_user_model
 
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+
+from django.conf import settings
 
 
 class CustomUserManager(BaseUserManager):
@@ -149,7 +151,7 @@ class Comment(models.Model):
 
 
 class Message(models.Model):
-    author_message=models.ForeignKey(User, on_delete=models.CASCADE, related_name='send_message')
-    recipient=models.ForeignKey(User, on_delete=models.CASCADE, related_name='accepted_message')
+    author_message=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='send_message')
+    recipient=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='accepted_message')
     content=models.TextField()
     sent_time=models.DateTimeField(auto_now_add=True)
