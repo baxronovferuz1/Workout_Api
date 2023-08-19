@@ -51,7 +51,7 @@ class Teacher(models.Model):
 
     @property
     def followers_count(self):
-        return self.followers.count()
+        return self.followers.all().count()
     
 
 
@@ -64,10 +64,10 @@ class NormalUser(models.Model):
 
     @property
     def following_count(self):
-        return self.following.count()
+        return self.following.all().count()
     
     def __str__(self):
-        return self.username #i will change username to user
+        return self.user
 
 class Post(models.Model):
     author = models.ForeignKey(Teacher, on_delete=models.CASCADE)
