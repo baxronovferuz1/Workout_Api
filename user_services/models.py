@@ -67,7 +67,7 @@ class NormalUser(models.Model):
         return self.following.count()
     
     def __str__(self):
-        return self.username
+        return self.username #i will change username to user
 
 class Post(models.Model):
     author = models.ForeignKey(Teacher, on_delete=models.CASCADE)
@@ -123,7 +123,7 @@ class Follow(models.Model):
         NormalUser, on_delete=models.CASCADE, related_name='followers'
     )
     followings = models.ForeignKey(
-        NormalUser, on_delete=models.CASCADE, related_name='followings'
+        NormalUser, on_delete=models.CASCADE, related_name='followings'  #shu 2lasidayam normal user bo'lgan shuni solving qilishim kerak
     )
     created_at = models.DateTimeField(auto_now_add=True)
     
