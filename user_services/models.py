@@ -81,6 +81,10 @@ class Post(models.Model):
         return self.comments.count()
     
     @property
+    def comments(self):
+        return list(self.comments.order_by("created_on"))
+    
+    @property
     def like_count(self):
         return self.likes.count()
 
