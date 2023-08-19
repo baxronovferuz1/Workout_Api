@@ -120,10 +120,10 @@ class Like(models.Model):
 
 class Follow(models.Model):
     followers = models.ForeignKey(
-        NormalUser, on_delete=models.CASCADE, related_name='followers'
+        Teacher, on_delete=models.CASCADE, related_name='followers'
     )
     followings = models.ForeignKey(
-        NormalUser, on_delete=models.CASCADE, related_name='followings'  #shu 2lasidayam normal user bo'lgan shuni solving qilishim kerak
+        NormalUser, on_delete=models.CASCADE, related_name='followings'  
     )
     created_at = models.DateTimeField(auto_now_add=True)
     
