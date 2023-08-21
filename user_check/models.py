@@ -7,7 +7,7 @@ import uuid
 
 ORDINARY_USER, MANAGER, SUPER_ADMIN = (
     'ordinary_user',
-    'manager',
+    'manager', 
     'super_admin'
 )
 
