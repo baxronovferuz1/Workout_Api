@@ -3,6 +3,6 @@ from .models import UserConfirmation
 
 
 
-urlpatterns={
+urlpatterns=[
     path("", UserConfirmation),
-}
+]
