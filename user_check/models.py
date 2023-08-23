@@ -87,16 +87,12 @@ class User(AbstractUser, BaseModel):
         (CODE_VERIFIED, CODE_VERIFIED)
 
     )
-    SEX_CHOICES=(
-        (MALE,MALE),
-        (FEMALE,FEMALE)
-    )
+    
 
     
     user_roles=models.CharField(max_length=31,choices=USER_ROLES, default=ORDINARY_USER)
     auht_type=models.CharField(max_length=35, choices=AUTH_TYPE_CHOICES, default=VIA_USERNAME)
     auht_status=models.CharField(max_length=35, choices=AUTH_STATUS, default=NEW)
-    sex=models.CharField(max_length=20, choices= SEX_CHOICES, null=True, blank=True)
     email=models.EmailField(null=True,unique=True)
     phone_number=models.CharField(max_length=12,null=True, blank=True,unique=True,validators=[_validate_phone])
     bio=models.CharField(max_length=200,blank=True,null=True)
@@ -151,6 +147,7 @@ class User(AbstractUser, BaseModel):
             "access":str(refresh.access_token),
             "refresh":str(refresh)
         }
+    
 
     def clean(self):
         self.check_email()
