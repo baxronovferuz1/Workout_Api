@@ -5,6 +5,7 @@ from django.core.validators import RegexValidator
 import uuid
 from django.conf import settings
 import random
+from rest_framework_simplejwt.tokens import RefreshToken
 
 ORDINARY_USER, MANAGER, SUPER_ADMIN = (
     'ordinary_user',
