@@ -65,7 +65,7 @@ class UserConfirmation(models.Model):
 
 
 
-class User(AbstractUser, BaseModel):
+class User(AbstractUser):
     _validate_phone=RegexValidator(
         regex=r"^9\d{12}$",
         message='Your phone number should start with 9 and have 12 digits',

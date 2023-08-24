@@ -9,6 +9,7 @@ from django.db import models
 # from django.contrib.auth.models import User
 
 from django.conf import settings 
+from user_check.models import User
 
 
 class CustomUserManager(BaseUserManager):
@@ -33,7 +34,7 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
-class CustomUser(AbstractBaseUser, PermissionsMixin):
+class CustomUser(AbstractBaseUser, PermissionsMixin, User):
     email = models.EmailField(unique=True)
     is_staff = models.BooleanField(default=False)
     is_teacher = models.BooleanField(default=False)
