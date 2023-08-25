@@ -7,9 +7,9 @@ from django.conf import settings
 import random
 from rest_framework_simplejwt.tokens import RefreshToken
 
-ORDINARY_USER, MANAGER, SUPER_ADMIN = (
+ORDINARY_USER, TEACHER, SUPER_ADMIN = (
     'ordinary_user',
-    'manager', 
+    'teacher', 
     'super_admin'
 )
 
@@ -41,7 +41,7 @@ class UserConfirmation(models.Model):
     )
 
     code=models.CharField(max_length=4)
-    user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE, related_name='verify_codes')
+    user=models.ForeignKey('users.User',on_delete=models.CASCADE, related_name='verify_codes')
     verify_type=models.CharField(max_length=31, choices=TYPE_CHOICES)
     expiration_time=models.DateTimeField(null=True) #yuborilgan codeni tugash vaqti
     is_confirmed=models.BooleanField(default=False)  #tasdiqlandi✔️
@@ -73,7 +73,7 @@ class User(AbstractUser):
 
     USER_ROLES=(
         (ORDINARY_USER, ORDINARY_USER),
-        (MANAGER,MANAGER),
+        (TEACHER,TEACHER),
         (SUPER_ADMIN,SUPER_ADMIN)    
     )
     AUTH_TYPE_CHOICES=(
@@ -155,8 +155,6 @@ class User(AbstractUser):
         self.check_username()
         self.check_password()
         self.hashing_password()
-
-
 
 
 
