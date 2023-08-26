@@ -7,7 +7,7 @@ from django.contrib.auth.password_validation import validate_password
 from user_check.models import CODE_VERIFIED,DONE,NEW
 from django.db.models import Q
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer,TokenRefreshSerializer
-# from start_project.utility import check_user_type
+from workout_api.utility import check_user_type
 from rest_framework import exceptions
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
