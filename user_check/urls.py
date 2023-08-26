@@ -1,8 +1,8 @@
 from django.urls import path
-from .models import UserConfirmation
+# from .models import UserConfirmation
 
 
 
-urlpatterns=[
-    path("", UserConfirmation),
-]
+# urlpatterns=[
+#     path("", UserConfirmation),
+# ]
