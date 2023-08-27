@@ -1,6 +1,6 @@
 from abc import ABC
 from rest_framework import serializers
-from user_check.models import User,UserConfirmation
+from .models import User,UserConfirmation
 from user_check.models import VIA_EMAIL,VIA_PHONE
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
@@ -38,3 +38,20 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
                 'message':'you must send phone number or email or username'
             }
             return ValidationError(data)
+        
+        authentication_kwargs={
+            self.username_field:username,'password':attrs['password']
+        }
+        
+
+        current_user=User.objects.filter(username__iexact=username)
+
+        if current_user.auth_status!=DONE:
+            raise ValidationError({'message':'you did not complete your authentication process'})
+        user=authenticate(**authentication_kwargs)
+        if user is not None:
+            self.user=user
+        else:
+            raise ValidationError(
+                {"password":"login or password you entered is incurrect,try again "}
+            )
