@@ -41,7 +41,7 @@ class UserConfirmation(models.Model):
     )
 
     code=models.CharField(max_length=4)
-    user=models.ForeignKey('user_check.User',on_delete=models.CASCADE, related_name='verify_codes')
+    user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE, related_name='verify_codes')
     verify_type=models.CharField(max_length=31, choices=TYPE_CHOICES)
     expiration_time=models.DateTimeField(null=True) #yuborilgan codeni tugash vaqti
     is_confirmed=models.BooleanField(default=False)  #tasdiqlandi✔️
