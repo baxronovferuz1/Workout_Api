@@ -132,7 +132,7 @@ class User(AbstractUser):
             self.email=normalized_email
 
 
-    def check_password(self):
+    def generate_temporary_password(self):
         if not self.password:
             temporary_password=f"password{uuid.uuid4().__str__().split('-')[-1]}"
             self.password=temporary_password
@@ -153,7 +153,7 @@ class User(AbstractUser):
     def clean(self):
         self.check_email()
         self.check_username()
-        self.check_password()
+        self.generate_temporary_password()
         self.hashing_password()
 
 
