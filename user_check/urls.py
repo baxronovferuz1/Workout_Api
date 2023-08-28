@@ -1,8 +1,7 @@
 from django.urls import path
-# from .models import UserConfirmation
+from .views import LoginView
 
 
-
-# urlpatterns=[
-#     path("", UserConfirmation),
-# ]
+urlpatterns=[
+    path("login/",LoginView.as_view(), name="login"),
+]
