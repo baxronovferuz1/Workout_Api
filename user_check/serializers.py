@@ -1,18 +1,21 @@
 from abc import ABC
 from rest_framework import serializers
 from .models import User,UserConfirmation
-from user_check.models import VIA_EMAIL,VIA_PHONE
+from .models import VIA_EMAIL,VIA_PHONE
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
-from user_check.models import CODE_VERIFIED,DONE,NEW
+from .models import CODE_VERIFIED,DONE,NEW
 from django.db.models import Q
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer,TokenRefreshSerializer
-from workout_api.utility import check_user_type
+from workout_api.utility import check_user_type,check_email_or_phone
 from rest_framework import exceptions
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
 from rest_framework.generics import get_object_or_404
 from rest_framework_simplejwt.tokens import AccessToken
+
+
+
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
@@ -40,11 +43,13 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
             return ValidationError(data)
         
         authentication_kwargs={
-            self.username_field:username,'password':attrs['password']
+            self.username_field:username,'password':attrs['password'] #userdan yuborilgan parol
         }
+
         
 
-        current_user=User.objects.filter(username__iexact=username)
+
+        current_user=User.objects.filter(username__iexact=username)  #filterni o'rniga get bo'lishi mumkin
 
         if current_user.auth_status!=DONE:
             raise ValidationError({'message':'you did not complete your authentication process'})
