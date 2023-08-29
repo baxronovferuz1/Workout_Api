@@ -100,3 +100,41 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
             raise ValidationError(
                 {"password":"login or password you entered is incurrect,try again "}
             )
+
+
+
+class SignUPSerializer(serializers.ModelSerializer):
+    guid=serializers.UUIDField(read_only=True)
+
+
+
+    def __init__(self, *args, **kwargs):
+        super(SignUPSerializer,self).__init__(*args, **kwargs)
+        self.fields['email_phone_number']=serializers.CharField(required=False)
+
+
+    class Meta:
+        model=User
+        fields=(
+            "guid",
+            "auth_type",
+            "auth_status"
+        )
+
+        extra_kwargs={
+            "auth_type":{"read_only":True, "required":False},
+            "auth_status":{'read_only':True, "required":False}
+        }
+
+
+
+    def create(self, validated_data):
+        user=super(SignUPSerializer, self).create(validated_data)
+        if user.auth_type==VIA_EMAIL:
+            code=user.create_verify_code(user.auth_type)
+            send_email(user.email, code)
+        elif user.auth_type==VIA_PHONE:
+            code=user.create_verify_code(user.auth_type)
+            send_phone_notification(user.phone_number, code)
+
+
