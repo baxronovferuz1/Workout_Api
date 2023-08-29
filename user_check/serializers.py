@@ -128,13 +128,54 @@ class SignUPSerializer(serializers.ModelSerializer):
 
 
 
-    def create(self, validated_data):
-        user=super(SignUPSerializer, self).create(validated_data)
-        if user.auth_type==VIA_EMAIL:
-            code=user.create_verify_code(user.auth_type)
-            send_email(user.email, code)
-        elif user.auth_type==VIA_PHONE:
-            code=user.create_verify_code(user.auth_type)
-            send_phone_notification(user.phone_number, code)
+    # def create(self, validated_data):
+    #     user=super(SignUPSerializer, self).create(validated_data)
+    #     if user.auth_type==VIA_EMAIL:
+    #         code=user.create_verify_code(user.auth_type)
+    #         send_email(user.email, code)
+    #     elif user.auth_type==VIA_PHONE:
+    #         code=user.create_verify_code(user.auth_type)
+    #         send_phone_notification(user.phone_number, code)
 
 
+    def validate(self,in_data):
+        super(SignUPSerializer,self).validate(in_data)
+        data=self.auth_validate(in_data)
+        return data
+
+
+
+
+    @staticmethod
+    def auth_validate(in_data):
+        user_input=str(in_data.get('email_phone_number'))
+        input_type=check_email_or_phone(user_input)
+        if input_type=="email":
+            data={
+                "email":in_data.get("email_phone_number"),
+                "auth_type":VIA_EMAIL
+            }
+
+        elif input_type=="phone":
+            data={
+                "email":in_data.get("email_phone_number"),
+                "auth_type":VIA_PHONE
+            }
+
+        elif input_type is None:
+            data={
+                'success':False,
+                'message':"you must send email_adress or phone number"
+             
+            }
+            raise ValidationError(data)
+        
+        else:
+            data={
+                'success':False,
+                "message":"you must send email_adress or phone number"
+            }
+            raise ValidationError(data)
+        return data
+        
+    
