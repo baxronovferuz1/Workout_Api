@@ -17,12 +17,12 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 
 
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+# class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
-    def __init__(self, *args, **kwargs):
-        super(MyTokenObtainPairSerializer, self).__init__(*args, **kwargs)
-        self.fields['userinput']=serializers.CharField(required=True)
-        self.fields['username']=serializers.CharField(read_only=True)
+#     def __init__(self, *args, **kwargs):
+#         super(MyTokenObtainPairSerializer, self).__init__(*args, **kwargs)
+#         self.fields['userinput']=serializers.CharField(required=True)
+#         self.fields['username']=serializers.CharField(read_only=True)
 
 
     # def auth_validate(self,attrs):
@@ -63,128 +63,54 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     #         )
 
 
-    def auth_validate(self, attrs):
-        user_input = attrs.get('userinput')
-        password = attrs.get('password')
+    # def auth_validate(self, attrs):
+    #     user_input = attrs.get('userinput')
+    #     password = attrs.get('password')
         
-        if check_user_type(user_input) == 'username':
-            username = attrs.get('userinput')  # Use the userinput field instead
-        elif check_user_type(user_input) == 'email':
-            user = self.get_user(email__iexact=user_input)
-            username = user.username
-        elif check_user_type(user_input) == 'phone':
-            user = self.get_user(phone_number=user_input)
-            username = user.username
-        else:
-            data = {
-                'success': False,
-                'message': 'you must send phone number or email or username'
-            }
-            raise serializers.ValidationError(data)
+    #     if check_user_type(user_input) == 'username':
+    #         username = attrs.get('userinput')  # Use the userinput field instead
+    #     elif check_user_type(user_input) == 'email':
+    #         user = self.get_user(email__iexact=user_input)
+    #         username = user.username
+    #     elif check_user_type(user_input) == 'phone':
+    #         user = self.get_user(phone_number=user_input)
+    #         username = user.username
+    #     else:
+    #         data = {
+    #             'success': False,
+    #             'message': 'you must send phone number or email or username'
+    #         }
+    #         raise serializers.ValidationError(data)
         
-        authentication_kwargs = {
-            self.username_field: username,
-            'password': password
-        }
+    #     authentication_kwargs = {
+    #         self.username_field: username,
+    #         'password': password
+    #     }
         
-        # return authentication_kwargs
+    #     # return authentication_kwargs
     
-        current_user=User.objects.filter(username__iexact=username)  #filterni o'rniga get bo'lishi mumkin
+    #     current_user=User.objects.filter(username__iexact=username)  #filterni o'rniga get bo'lishi mumkin
 
-        if current_user.auth_status!=DONE:
-            raise ValidationError({'message':'you did not complete your authentication process'})
-        user=authenticate(**authentication_kwargs)
-        if user is not None:
-            self.user=user
-        else:
-            raise ValidationError(
-                {"password":"login or password you entered is incurrect,try again "}
-            )
+    #     if current_user.auth_status!=DONE:
+    #         raise ValidationError({'message':'you did not complete your authentication process'})
+    #     user=authenticate(**authentication_kwargs)
+    #     if user is not None:
+    #         self.user=user
+    #     else:
+    #         raise ValidationError(
+    #             {"password":"login or password you entered is incurrect,try again "}
+    #         )
     
 
-    def get_user(self, **kwargs):
-        users=User.objects.filter(**kwargs)
-        if not users.exists():
-            raise exceptions.AuthenticationFailed(
-                self.error_messages['no_active_account'],
-                'no_active_account'
-            )
-        return users.first()
+    # def get_user(self, **kwargs):
+    #     users=User.objects.filter(**kwargs)
+    #     if not users.exists():
+    #         raise exceptions.AuthenticationFailed(
+    #             self.error_messages['no_active_account'],
+    #             'no_active_account'
+    #         )
+    #     return users.first()
 
-
-# class SignUPSerializer(serializers.ModelSerializer):
-#     guid=serializers.UUIDField(read_only=True)
-
-
-
-#     def __init__(self, *args, **kwargs):
-#         super(SignUPSerializer,self).__init__(*args, **kwargs)
-#         self.fields['email_phone_number']=serializers.CharField(required=False)
-
-
-#     class Meta:
-#         model=User
-#         fields=(
-#             "guid",
-#             "auth_type",
-#             "auth_status"
-#         )
-
-#         extra_kwargs={
-#             "auth_type":{"read_only":True, "required":False},
-#             "auth_status":{'read_only':True, "required":False}
-#         }
-
-
-
-#     # def create(self, validated_data):
-#     #     user=super(SignUPSerializer, self).create(validated_data)
-#     #     if user.auth_type==VIA_EMAIL:
-#     #         code=user.create_verify_code(user.auth_type)
-#     #         send_email(user.email, code)
-#     #     elif user.auth_type==VIA_PHONE:
-#     #         code=user.create_verify_code(user.auth_type)
-#     #         send_phone_notification(user.phone_number, code)
-
-
-#     def validate(self,in_data):
-#         super(SignUPSerializer,self).validate(in_data)
-#         data=self.auth_validate(in_data)
-#         return data
-
-
-
-
-#     @staticmethod
-#     def auth_validate(in_data):
-#         user_input=str(in_data.get('email_phone_number'))
-#         input_type=check_email_or_phone(user_input)
-#         if input_type=="email":
-#             data={
-#                 "email":in_data.get("email_phone_number"),
-#                 "auth_type":VIA_EMAIL
-#             }
-
-#         elif input_type=="phone":
-#             data={
-#                 "email":in_data.get("email_phone_number"),
-#                 "auth_type":VIA_PHONE
-#             }
-
-#         elif input_type is None:
-#             data={
-#                 'success':False,
-#                 'message':"you must send email_adress or phone number"
-             
-#             }
-#             raise ValidationError(data)
-        
-#         else:
-#             data={
-#                 'success':False,
-#                 "message":"you must send email_adress or phone number"
-#             }
-#             raise ValidationError(data)
-#         return data
-        
+class SignUpSerializer(serializers.ModelSerializer):
+    
     
