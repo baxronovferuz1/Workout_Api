@@ -100,82 +100,91 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
             raise ValidationError(
                 {"password":"login or password you entered is incurrect,try again "}
             )
+    
+
+    def get_user(self, **kwargs):
+        users=User.objects.filter(**kwargs)
+        if not users.exists():
+            raise exceptions.AuthenticationFailed(
+                self.error_messages['no_active_account'],
+                'no_active_account'
+            )
+        return users.first()
+
+
+# class SignUPSerializer(serializers.ModelSerializer):
+#     guid=serializers.UUIDField(read_only=True)
 
 
 
-class SignUPSerializer(serializers.ModelSerializer):
-    guid=serializers.UUIDField(read_only=True)
+#     def __init__(self, *args, **kwargs):
+#         super(SignUPSerializer,self).__init__(*args, **kwargs)
+#         self.fields['email_phone_number']=serializers.CharField(required=False)
+
+
+#     class Meta:
+#         model=User
+#         fields=(
+#             "guid",
+#             "auth_type",
+#             "auth_status"
+#         )
+
+#         extra_kwargs={
+#             "auth_type":{"read_only":True, "required":False},
+#             "auth_status":{'read_only':True, "required":False}
+#         }
 
 
 
-    def __init__(self, *args, **kwargs):
-        super(SignUPSerializer,self).__init__(*args, **kwargs)
-        self.fields['email_phone_number']=serializers.CharField(required=False)
+#     # def create(self, validated_data):
+#     #     user=super(SignUPSerializer, self).create(validated_data)
+#     #     if user.auth_type==VIA_EMAIL:
+#     #         code=user.create_verify_code(user.auth_type)
+#     #         send_email(user.email, code)
+#     #     elif user.auth_type==VIA_PHONE:
+#     #         code=user.create_verify_code(user.auth_type)
+#     #         send_phone_notification(user.phone_number, code)
 
 
-    class Meta:
-        model=User
-        fields=(
-            "guid",
-            "auth_type",
-            "auth_status"
-        )
-
-        extra_kwargs={
-            "auth_type":{"read_only":True, "required":False},
-            "auth_status":{'read_only':True, "required":False}
-        }
-
-
-
-    # def create(self, validated_data):
-    #     user=super(SignUPSerializer, self).create(validated_data)
-    #     if user.auth_type==VIA_EMAIL:
-    #         code=user.create_verify_code(user.auth_type)
-    #         send_email(user.email, code)
-    #     elif user.auth_type==VIA_PHONE:
-    #         code=user.create_verify_code(user.auth_type)
-    #         send_phone_notification(user.phone_number, code)
-
-
-    def validate(self,in_data):
-        super(SignUPSerializer,self).validate(in_data)
-        data=self.auth_validate(in_data)
-        return data
+#     def validate(self,in_data):
+#         super(SignUPSerializer,self).validate(in_data)
+#         data=self.auth_validate(in_data)
+#         return data
 
 
 
 
-    @staticmethod
-    def auth_validate(in_data):
-        user_input=str(in_data.get('email_phone_number'))
-        input_type=check_email_or_phone(user_input)
-        if input_type=="email":
-            data={
-                "email":in_data.get("email_phone_number"),
-                "auth_type":VIA_EMAIL
-            }
+#     @staticmethod
+#     def auth_validate(in_data):
+#         user_input=str(in_data.get('email_phone_number'))
+#         input_type=check_email_or_phone(user_input)
+#         if input_type=="email":
+#             data={
+#                 "email":in_data.get("email_phone_number"),
+#                 "auth_type":VIA_EMAIL
+#             }
 
-        elif input_type=="phone":
-            data={
-                "email":in_data.get("email_phone_number"),
-                "auth_type":VIA_PHONE
-            }
+#         elif input_type=="phone":
+#             data={
+#                 "email":in_data.get("email_phone_number"),
+#                 "auth_type":VIA_PHONE
+#             }
 
-        elif input_type is None:
-            data={
-                'success':False,
-                'message':"you must send email_adress or phone number"
+#         elif input_type is None:
+#             data={
+#                 'success':False,
+#                 'message':"you must send email_adress or phone number"
              
-            }
-            raise ValidationError(data)
+#             }
+#             raise ValidationError(data)
         
-        else:
-            data={
-                'success':False,
-                "message":"you must send email_adress or phone number"
-            }
-            raise ValidationError(data)
-        return data
+#         else:
+#             data={
+#                 'success':False,
+#                 "message":"you must send email_adress or phone number"
+#             }
+#             raise ValidationError(data)
+#         return data
         
     
