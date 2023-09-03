@@ -2,8 +2,7 @@ from rest_framework.exceptions import ValidationError
 from django.core.mail import EmailMessage
 import threading
 import phonenumbers
-
-
+from django.template.loader import render_to_string
 
 
 
@@ -33,6 +32,20 @@ class Email:
         if data.get("content_type")=="html":
             email.content_subtype="html"
         EmailThread(email).start()
+
+
+def send_email(email, code):
+    html_content=render_to_string(
+        "to_email/activate_accounts.html",
+        {"code":code}
+
+    )
+    Email.send_email({
+        "subject":"Registration",
+        "toemail":email,
+        "body":html_content,
+        "content_type":"html"
+    })
         
 
 
