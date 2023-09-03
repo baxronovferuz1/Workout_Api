@@ -4,6 +4,8 @@ import threading
 import phonenumbers
 from django.template.loader import render_to_string
 from decouple import config
+from twilio.rest import Client
+
 
 #         EMAIL
 
@@ -54,7 +56,15 @@ def send_email(email, code):
 
 #    PHONE
 
-
+def send_phone_notification(phone,code):
+    account_sid=config('account_sid')
+    auth_token=config("auth_token")
+    client=Client(account_sid,auth_token)
+    client.messages.create(
+        body=f"Hello! Your verification code is {code}/n",
+        from_="+998931234567",
+        to=f"{phone}"
+    )
 
 
 def phone_checker(p_number):
