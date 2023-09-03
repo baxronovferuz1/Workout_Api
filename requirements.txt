@@ -13,3 +13,10 @@ inflection==0.5.1
 packaging==23.1 
 pyyaml==6.0.1 
 uritemplate==4.1.1
+django-phonenumber-field==7.1.0
+django-twilio==0.14.3.2 
+idna==3.4 
+phonenumbers==8.13.19 
+requests==2.31.0 
+twilio==7.17.0 
+urllib3==2.0.4
