@@ -1,6 +1,7 @@
 from rest_framework.exceptions import ValidationError
 from django.core.mail import EmailMessage
 import threading
+import phonenumbers
 
 
 
@@ -44,3 +45,13 @@ class Email:
 def phone_checker(p_number):
     if not(p_number and isinstance(p_number,str) and p_number.isdigit()):
         raise ValidationError("Your phone number isn't valid")
+    
+
+def phone_parser(p_number, c_code=None):
+    try:
+        phone_checker(p_number)
+        p_number="+"+p_number
+        return phonenumbers.parse(p_number, c_code)
+    
+    except Exception as e:
+        return ValidationError("Your phone isn't valid")
