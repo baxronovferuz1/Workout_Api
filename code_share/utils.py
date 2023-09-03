@@ -3,9 +3,9 @@ from django.core.mail import EmailMessage
 import threading
 import phonenumbers
 from django.template.loader import render_to_string
+from decouple import config
 
-
-
+#         EMAIL
 
 class EmailThread(threading.Thread): # elektron pochta muhokamalarini tartibli bo'lishiga yordam beradi
 
@@ -52,7 +52,9 @@ def send_email(email, code):
 
 
 
-    #  PHONE
+#    PHONE
+
+
 
 
 def phone_checker(p_number):
