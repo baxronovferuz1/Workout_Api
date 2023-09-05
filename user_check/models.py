@@ -92,8 +92,8 @@ class User(AbstractUser):
 
     
     user_roles=models.CharField(max_length=31,choices=USER_ROLES, default=ORDINARY_USER)
-    auht_type=models.CharField(max_length=35, choices=AUTH_TYPE_CHOICES, default=VIA_USERNAME)
-    auht_status=models.CharField(max_length=35, choices=AUTH_STATUS, default=NEW)
+    auth_type=models.CharField(max_length=35, choices=AUTH_TYPE_CHOICES, default=VIA_USERNAME)
+    auth_status=models.CharField(max_length=35, choices=AUTH_STATUS, default=NEW)
     email=models.EmailField(null=True,unique=True)
     phone_number=models.CharField(max_length=12,null=True, blank=True,unique=True,validators=[_validate_phone])
     bio=models.CharField(max_length=200,blank=True,null=True)
