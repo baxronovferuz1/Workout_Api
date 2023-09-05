@@ -155,5 +155,38 @@ class SignUPSerializer(serializers.ModelSerializer):
             super(SignUPSerializer,self).validate(in_data)
             data=self.auth_validate(in_data)
             return data
+        
+
+        @staticmethod
+        def auth_validate(in_data):
+            user_input=str(in_data.get('email_phone_number'))
+            input_type=check_email_or_phone(user_input)
+            if input_type=="email":
+                data={
+                    "email":in_data.get("email_phone_number"),
+                    "auth_type":VIA_EMAIL
+                }
+
+            elif input_type=="phone":
+                data={
+                    "email":in_data.get("email_phone_number"),
+                    "auth_type":VIA_PHONE
+                }
+
+            elif input_type is None:
+                data={
+                    'success':False,
+                    'message':"you must send email_adress or phone number"
+                
+                }
+                raise ValidationError(data)
+            
+            else:
+                data={
+                    'success':False,
+                    "message":"you must send email_adress or phone number"
+                }
+                raise ValidationError(data)
+            return data
 
     
