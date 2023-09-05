@@ -13,7 +13,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
 from rest_framework.generics import get_object_or_404
 from rest_framework_simplejwt.tokens import AccessToken
-
+from code_share.utils import phone_checker,phone_parser,send_phone_notification,send_email
 
 
 
@@ -139,5 +139,15 @@ class SignUPSerializer(serializers.ModelSerializer):
             "auth_type":{"read_only":True, "required":False},
             "auth_status":{'read_only':True, "required":False}
         }
+
+
+        def create(self,validated_data):
+            user=super(SignUPSerializer,self).create(validated_data)
+            if user.auth_type==VIA_EMAIL:
+                code=user.create_verify_code(user.auth_type)
+                send_email(user.email, code)
+            elif user.auth_type==VIA_PHONE:
+                code=user.create_verify_code(user.auth_type)
+                send_phone_notification(user.phone_number, code)
 
     
