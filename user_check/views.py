@@ -13,7 +13,7 @@ from rest_framework.generics import CreateAPIView
 
 
 
-class CreateUserview(CreateAPIView):
+class SignUpView(CreateAPIView):
     model = User
     permission_classes=(permissions.AllowAny,)
     serializer_class=SignUPSerializer
