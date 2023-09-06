@@ -192,6 +192,22 @@ class SignUPSerializer(serializers.ModelSerializer):
             }
             raise ValidationError(data)
         return data
+
+
+    
+    def validate_email_phone_number(self,value):
+        value=value.lower()
+
+        #Q-ketma-ket 5-6xil queryni yozish uchun mo'ljallangan
+
+        query=(Q(phone_number=value) | Q(email=value)) & (
+            Q(auth_status=NEW) | Q(auth_status=CODE_VERIFIED)
+        )
+
+        if User.objects.filter(query).exists():
+            User.objects.get(query).delete()  #customer emailni yoki telefon raqamini kiritib 
+                            # code kiritmasdan chiqib ketib qolsa,uni datalari bazaga saqlanmaydi yani DONE bo'lmagancha
+
            
 
     
