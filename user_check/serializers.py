@@ -208,6 +208,9 @@ class SignUPSerializer(serializers.ModelSerializer):
             User.objects.get(query).delete()  #customer emailni yoki telefon raqamini kiritib 
                             # code kiritmasdan chiqib ketib qolsa,uni datalari bazaga saqlanmaydi yani DONE bo'lmagancha
 
+        if query and User.objects.filter(email=value).exists():
+            
+
            
 
     
