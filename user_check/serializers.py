@@ -117,13 +117,13 @@ from code_share.utils import phone_checker,phone_parser,send_phone_notification,
 
 
 
-class SignUPSerializer(serializers.ModelSerializer):
+class SignUpSerializer(serializers.ModelSerializer):
     guid=serializers.UUIDField(read_only=True)
 
 
 
     def __init__(self, *args, **kwargs):
-        super(SignUPSerializer,self).__init__(*args, **kwargs)
+        super(SignUpSerializer,self).__init__(*args, **kwargs)
         self.fields['email_phone_number']=serializers.CharField(required=False)
 
 
@@ -142,7 +142,7 @@ class SignUPSerializer(serializers.ModelSerializer):
 
 
     def create(self, validated_data):
-        user=super(SignUPSerializer, self).create(validated_data)
+        user=super(SignUpSerializer, self).create(validated_data)
         if user.auth_type==VIA_EMAIL:
             code=user.create_verify_code(user.auth_type)
             send_email(user.email, code)
@@ -154,7 +154,7 @@ class SignUPSerializer(serializers.ModelSerializer):
 
 
     def validate(self,in_data):
-        super(SignUPSerializer,self).validate(in_data)
+        super(SignUpSerializer,self).validate(in_data)
         data=self.auth_validate(in_data)
         return data
 
