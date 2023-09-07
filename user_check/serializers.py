@@ -221,6 +221,10 @@ class SignUPSerializer(serializers.ModelSerializer):
                 "message": "This phone number is already being used!"
             }
             raise ValidationError(data)
+        
+        if check_email_or_phone(value) == "phone": # 998981234555
+            phone_parser(value, self.initial_data.get("country_code"))
+        return value
             
 
            
