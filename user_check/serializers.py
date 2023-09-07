@@ -215,7 +215,12 @@ class SignUPSerializer(serializers.ModelSerializer):
             }
             raise ValidationError(data)
 
-        
+        elif value and User.objects.filter(phone_number=value).exists():
+            data = {
+                "success": False,
+                "message": "This phone number is already being used!"
+            }
+            raise ValidationError(data)
             
 
            
