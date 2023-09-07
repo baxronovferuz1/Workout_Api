@@ -140,9 +140,9 @@ class SignUpSerializer(serializers.ModelSerializer):
             "auth_status":{'read_only':True, "required":False}
         }
 
-
     def create(self, validated_data):
         user=super(SignUpSerializer, self).create(validated_data)
+        print(user)
         if user.auth_type==VIA_EMAIL:
             code=user.create_verify_code(user.auth_type)
             send_email(user.email, code)
