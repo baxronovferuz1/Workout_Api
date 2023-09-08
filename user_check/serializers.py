@@ -225,7 +225,12 @@ class SignUpSerializer(serializers.ModelSerializer):
         if check_email_or_phone(value) == "phone": #998931234567 shu ko'rinishda qabul qilinadi
             phone_parser(value )#,self.initial_data.get("country_code"))---agar country code berilgan bo'lsa shu qism ishlatiladi
             return value
-            
+
+
+    def to_representation(self, instance):
+        data = super(SignUpSerializer, self).to_representation(instance)
+        data.update(instance.tokens())
+        return data        
 
            
 
