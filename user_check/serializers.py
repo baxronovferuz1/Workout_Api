@@ -21,12 +21,14 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     def __init__(self, *args, **kwargs):
         super(MyTokenObtainPairSerializer, self).__init__(*args, **kwargs)
-        self.fields['userinput']=serializers.CharField(required=True)
-        self.fields['username']=serializers.CharField(read_only=True)
+        self.fields['userinput']=serializers.CharField(required=False)
+        self.fields['username']=serializers.CharField(read_only=True, required=False)
 
 
     def auth_validate(self,attrs):
-        user_input=attrs.get('userinput')
+        print(attrs)
+        user_input = attrs.get('userinput')
+        print(user_input)
         if check_user_type(user_input)=='username':
             username=attrs.get('username')
         elif check_user_type(user_input)=='email':
