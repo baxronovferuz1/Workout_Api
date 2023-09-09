@@ -116,9 +116,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 
-
-
-
 class SignUpSerializer(serializers.ModelSerializer):
     guid=serializers.UUIDField(read_only=True)
 
