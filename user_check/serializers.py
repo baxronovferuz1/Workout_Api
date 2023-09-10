@@ -1,211 +1,173 @@
 from abc import ABC
-from rest_framework import serializers
-from .models import User,UserConfirmation
-from .models import VIA_EMAIL,VIA_PHONE
-from rest_framework.exceptions import ValidationError
-from django.contrib.auth.password_validation import validate_password
-from .models import CODE_VERIFIED,DONE,NEW
-from django.db.models import Q
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer,TokenRefreshSerializer
-from workout_api.utility import check_user_type,check_email_or_phone
-from rest_framework import exceptions
+
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
+from rest_framework import exceptions
+from django.contrib.auth.password_validation import validate_password
+from django.db.models import Q
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework.generics import get_object_or_404
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import AccessToken
-from code_share.utils import phone_checker,phone_parser,send_phone_notification,send_email
 
+from workout_api.utility import check_email_or_phone, check_user_type
+from code_share.utils import phone_parser, send_email, send_phone_notification
+from user_check.models import User, UserConfirmation, VIA_EMAIL, VIA_PHONE, CODE_VERIFIED, DONE, NEW
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     def __init__(self, *args, **kwargs):
         super(MyTokenObtainPairSerializer, self).__init__(*args, **kwargs)
-        self.fields['userinput']=serializers.CharField(required=False)
-        self.fields['username']=serializers.CharField(read_only=True, required=False)
+        self.fields['userinput'] = serializers.CharField(required=False)
+        self.fields['username'] = serializers.CharField(read_only=True, required=False)
 
-
-    def auth_validate(self,attrs):
+    def auth_validate(self, attrs):
         print(attrs)
         user_input = attrs.get('userinput')
         print(user_input)
-        if check_user_type(user_input)=='username':
-            username=attrs.get('username')
-        elif check_user_type(user_input)=='email':
-            user=self.get_user(email__iexact=user_input)  #__iexact-"Baxronov@gmail.com" deb yozilgan email bazaga "baxronov@gmail.com" ko'rinishda bazga tushadi, custom emailni qayta kiritganda xato chiqmasligi ucun ishatiladi     
-            username=user.username
-        elif check_user_type(user_input)=='phone':
-            user=self.get_user(phone_number=user_input)
-            username=user.username
-        else:
-            data={
-                'success':False,
-                'message':'you must send phone number or email or username'
-            }
-            return ValidationError(data)
-        
-        authentication_kwargs={
-            self.username_field:username,
-            'password':attrs['password'] #userdan yuborilgan parol
-        }
-
-        
-
-
-        current_user=User.objects.filter(username__iexact=username)  #filterni o'rniga get bo'lishi mumkin
-
-        if current_user.auth_status!=DONE:
-            raise ValidationError({'message':'you did not complete your authentication process'})
-        user=authenticate(**authentication_kwargs)
-        if user is not None:
-            self.user=user
-        else:
-            raise ValidationError(
-                {"password":"login or password you entered is incurrect,try again "}
-            )
-
-
-    def auth_validate(self, attrs):
-        user_input = attrs.get('userinput')
-        password = attrs.get('password')
-        
-        if check_user_type(user_input) == 'username':
-            username = attrs.get('userinput')  # Use the userinput field instead
-        elif check_user_type(user_input) == 'email':
+        if check_user_type(user_input) == "username":
+            username = attrs.get('userinput')
+        elif check_user_type(user_input) == "email":
             user = self.get_user(email__iexact=user_input)
             username = user.username
-        elif check_user_type(user_input) == 'phone':
+        elif check_user_type(user_input) == "phone":
             user = self.get_user(phone_number=user_input)
             username = user.username
         else:
             data = {
                 'success': False,
-                'message': 'you must send phone number or email or username'
+                'message': "You must send username or email or phone_number"
             }
-            raise serializers.ValidationError(data)
-        
+            return ValidationError(data)
         authentication_kwargs = {
             self.username_field: username,
-            'password': password
+            'password': attrs['password']
         }
-        
-        # return authentication_kwargs
-    
-        current_user=User.objects.filter(username__iexact=username)  #filterni o'rniga get bo'lishi mumkin
-
-        if current_user.auth_status!=DONE:
-            raise ValidationError({'message':'you did not complete your authentication process'})
-        user=authenticate(**authentication_kwargs)
+        print(authentication_kwargs)
+        current_user = User.objects.filter(username__iexact=username).first()
+        if current_user.auth_status != DONE:
+            raise ValidationError({"message": "You didn't complete your authentication process. Auth_status error"})
+        user = authenticate(**authentication_kwargs)
         if user is not None:
-            self.user=user
+            self.user = user
         else:
             raise ValidationError(
-                {"password":"login or password you entered is incurrect,try again "}
+                {"password": "Sorry, login or password you entered is incorrect. Please check and try again."}
             )
-    
+
+    def validate(self, attrs):
+        self.auth_validate(attrs)
+        if self.user.auth_status != DONE:
+            raise PermissionDenied("You can't access to the program")
+        data = self.user.tokens()
+        data['auth_status'] = self.user.auth_status
+        return data
 
     def get_user(self, **kwargs):
-        users=User.objects.filter(**kwargs)
+        users = User.objects.filter(**kwargs)
         if not users.exists():
             raise exceptions.AuthenticationFailed(
                 self.error_messages['no_active_account'],
-                'no_active_account'
+                "no_active_account",
             )
         return users.first()
 
 
+class CustomTokenRefreshSerializer(TokenRefreshSerializer):
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        access_token_instance = AccessToken(data['access'])
+        user_id = access_token_instance['user_id']
+        user = get_object_or_404(User, id=user_id)
+        update_last_login(None, user)
+        return data
+
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
 
 
 class SignUpSerializer(serializers.ModelSerializer):
-    guid=serializers.UUIDField(read_only=True)
-
-
+    guid = serializers.UUIDField(read_only=True)
 
     def __init__(self, *args, **kwargs):
-        super(SignUpSerializer,self).__init__(*args, **kwargs)
-        self.fields['email_phone_number']=serializers.CharField(required=False)
-
+        super(SignUpSerializer, self).__init__(*args, **kwargs)
+        self.fields['email_phone_number'] = serializers.CharField(required=False)
 
     class Meta:
-        model=User
-        fields=(
+        model = User
+        fields = (
             "guid",
             "auth_type",
             "auth_status"
         )
-
-        extra_kwargs={
-            "auth_type":{"read_only":True, "required":False},
-            "auth_status":{'read_only':True, "required":False}
+        extra_kwargs = {
+            'auth_type': {'read_only': True, 'required': False},
+            'auth_status': {'read_only': True, 'required': False}
         }
 
     def create(self, validated_data):
-        user=super(SignUpSerializer, self).create(validated_data)
+        user = super(SignUpSerializer, self).create(validated_data)
         print(user)
-        if user.auth_type==VIA_EMAIL:
-            code=user.create_verify_code(user.auth_type)
+        if user.auth_type == VIA_EMAIL:
+            code = user.create_verify_code(user.auth_type)
+            print(code)
             send_email(user.email, code)
-        elif user.auth_type==VIA_PHONE:
-            code=user.create_verify_code(user.auth_type)
-            send_phone_notification(user.phone_number, code)
+            print("email sending..")
+        elif user.auth_type == VIA_PHONE:
+            code = user.create_verify_code(user.auth_type)
+            send_email(user.email, code)
+            # send_phone_notification(user.phone_number, code)
+        user.save()
+        return user
 
-
-
-
-    def validate(self,in_data):
-        super(SignUpSerializer,self).validate(in_data)
-        data=self.auth_validate(in_data)
+    def validate(self, attrs):
+        super(SignUpSerializer, self).validate(attrs)
+        data = self.auth_validate(attrs)
         return data
-
-
-
 
     @staticmethod
-    def auth_validate(in_data):
-        user_input=str(in_data.get('email_phone_number'))
-        input_type=check_email_or_phone(user_input)
-        if input_type=="email":
-            data={
-                "email":in_data.get("email_phone_number"),
-                "auth_type":VIA_EMAIL
+    def auth_validate(attrs):
+        user_input = str(attrs.get('email_phone_number')).lower()
+        print(user_input)
+        input_type = check_email_or_phone(user_input)
+        if input_type == "email":
+            data = {
+                "email": attrs.get('email_phone_number'),
+                'auth_type': VIA_EMAIL
             }
-
-        elif input_type=="phone":
-            data={
-                "email":in_data.get("email_phone_number"),
-                "auth_type":VIA_PHONE
+        elif input_type == "phone":
+            data = {
+                "phone_number": attrs.get('email_phone_number'),
+                'auth_type': VIA_PHONE
             }
-
         elif input_type is None:
-            data={
-                'success':False,
-                'message':"you must send email_adress or phone number"
-             
+            data = {
+                'success': False,
+                'message': "You must send email or phone number"
             }
             raise ValidationError(data)
-        
         else:
-            data={
-                'success':False,
-                "message":"you must send email_adress or phone number"
+            data = {
+                'success': False,
+                'message': "Must send email or phone number"
             }
             raise ValidationError(data)
+        # data.update(password=attrs.get('password'))
         return data
 
-
-    
-    def validate_email_phone_number(self,value):
-        value=value.lower()
-
-        #Q-ketma-ket 5-6xil queryni yozish uchun mo'ljallangan
-
-        query=(Q(phone_number=value) | Q(email=value)) & (
+    def validate_email_phone_number(self, value): # value = "samandar@gmail.com"
+        value = value.lower()
+        query = (Q(phone_number=value) | Q(email=value)) & (
             Q(auth_status=NEW) | Q(auth_status=CODE_VERIFIED)
         )
-
+        print(query)
         if User.objects.filter(query).exists():
-            User.objects.get(query).delete()  #customer emailni yoki telefon raqamini kiritib 
-                            # code kiritmasdan chiqib ketib qolsa,uni datalari bazaga saqlanmaydi yani DONE bo'lmagancha
+            print('topildi')
+            User.objects.get(query).delete()
 
         if value and User.objects.filter(email=value).exists():
             data = {
@@ -220,17 +182,71 @@ class SignUpSerializer(serializers.ModelSerializer):
                 "message": "This phone number is already being used!"
             }
             raise ValidationError(data)
-        
-        if check_email_or_phone(value) == "phone": #998931234567 shu ko'rinishda qabul qilinadi
-            phone_parser(value )#,self.initial_data.get("country_code"))---agar country code berilgan bo'lsa shu qism ishlatiladi
-            return value
 
+        if check_email_or_phone(value) == "phone": # 998981234555
+            phone_parser(value, self.initial_data.get("country_code"))
+        return value
 
     def to_representation(self, instance):
         data = super(SignUpSerializer, self).to_representation(instance)
         data.update(instance.tokens())
-        return data        
+        return data
 
-           
 
-    
+class ChangeUserInformationSerializer(serializers.Serializer):
+    bio = serializers.CharField(write_only=True, required=True)
+    # sex = serializers.CharField(write_only=True, required=True)
+    first_name = serializers.CharField(write_only=True, required=True)
+    username = serializers.CharField(write_only=True, required=True)
+    password = serializers.CharField(write_only=True, required=True)
+    confirm_password = serializers.CharField(write_only=True, required=True)
+
+    def validate_bio(self, bio):
+        if bio and len(bio) > 250:
+            raise ValidationError("Bio can not be more than 250 characters")
+        return bio
+
+    def validate_password(self, password):
+        validate_password(password)
+        return password
+
+    def validate_username(self, username):
+        requested_user = self.context['request'].user
+        user_name = requested_user.username
+        if len(username) < 5 or len(username) > 30:
+            raise ValidationError("Username must be between 5 and 30 characters long")
+        if username.isdigit():
+            raise ValidationError("This username is entirely numeric.")
+        if User.objects.filter(username__iexact=username).exclude(username=user_name).exists():
+            raise ValidationError("This username is already exists")
+
+        return username
+
+    def validate(self, data):
+        print(data)
+        password = data.get('password')
+        confirm_password = data.get('confirm_password')
+        if password:
+            validate_password(password)
+            validate_password(confirm_password)
+        if password != confirm_password:
+            raise ValidationError("Your passwords don't match")
+
+        return data
+
+    def update(self, instance, validated_data):
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.username = validated_data.get('username', instance.username)
+        instance.password = validated_data.get('password', instance.password)
+        instance.bio = validated_data.get('bio', instance.bio)
+        # instance.sex = validated_data.get('sex', instance.sex)
+
+        if validated_data.get('password'):
+            instance.set_password(validated_data.get('password'))
+
+        if instance.auth_status == CODE_VERIFIED:
+            user = self.context['request'].user
+            user.auth_status = DONE
+            user.save()
+        instance.save()
+        return instance
