@@ -33,7 +33,7 @@ class Email:
 
 def send_email(email, code):
     html_content = render_to_string(
-        'to_email/authentications/activate_accounts.html',
+        'email/authentication/activate_accounts.html',
         {"code": code}
     )
     Email.send_email({
