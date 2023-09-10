@@ -20,10 +20,10 @@ VIA_EMAIL, VIA_PHONE, VIA_USERNAME = (
     "via_username"
 )
 
-MALE, FEMALE = (
-    "male",
-    "female"
-)
+# MALE, FEMALE = (
+#     "male",
+#     "female"
+# )
 
 NEW, CODE_VERIFIED, DONE = (
     "NEW",
