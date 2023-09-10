@@ -8,7 +8,6 @@ from django.db import models
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from code_share.models import BaseModel
-from django.conf import settings
 
 ORDINARY_USER, MANAGER, SUPER_ADMIN = (
     "ordinary_user",
@@ -43,7 +42,7 @@ class UserConfirmation(models.Model):
         (VIA_EMAIL, VIA_EMAIL)
     )
     code = models.CharField(max_length=4)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE, 'verify_codes')
+    user = models.ForeignKey('user_check.User', models.CASCADE, 'verify_codes')
     verify_type = models.CharField(max_length=31, choices=TYPE_CHOICES)
     expiration_time = models.DateTimeField(null=True)
     is_confirmed = models.BooleanField(default=False)
