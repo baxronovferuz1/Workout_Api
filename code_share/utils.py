@@ -8,6 +8,9 @@ import threading
 from django.core.mail import EmailMessage
 
 
+#       EMAIL
+
+
 class EmailThread(threading.Thread):
 
     def __init__(self, email):
@@ -43,6 +46,8 @@ def send_email(email, code):
         "content_type": "html"
     })
 
+
+        #       PHONE
 
 def send_phone_notification(phone, code):
     account_sid = config('account_sid')
