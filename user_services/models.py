@@ -1,15 +1,15 @@
-# from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-# from django.db import models
-# # from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.db import models
+# from django.contrib.auth import get_user_model
 
 
 
-# # User=get_user_model
+# User=get_user_model
 
-# # from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 
-# from django.conf import settings 
-# # from user_check.models import User
+from django.conf import settings 
+# from user_check.models import User
 
 
 # class CustomUserManager(BaseUserManager):
@@ -45,119 +45,119 @@
 #     USERNAME_FIELD = 'email'
 
 
-# class Teacher(models.Model):
-#     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-#     bio=models.TextField(null=True,blank=True)
-#     profile_photo=models.ImageField(upload_to='profile_photos/', blank=True, null=True)
+class Teacher(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    bio=models.TextField(null=True,blank=True)
+    profile_photo=models.ImageField(upload_to='profile_photos/', blank=True, null=True)
 
 
-#     @property
-#     def followers_count(self):
-#         return self.followers.all().count()
+    @property
+    def followers_count(self):
+        return self.followers.all().count()
     
 
 
-# class NormalUser(models.Model):
-#     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-#     profile_photo=models.ImageField(upload_to='profile_photos/', blank=True, null=True)
+class NormalUser(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    profile_photo=models.ImageField(upload_to='profile_photos/', blank=True, null=True)
     
-#     # following = models.ManyToManyField(Teacher, related_name='followers')
+    # following = models.ManyToManyField(Teacher, related_name='followers')
 
 
-#     @property
-#     def following_count(self):
-#         return self.following.all().count()
+    @property
+    def following_count(self):
+        return self.following.all().count()
     
-#     def __str__(self):
-#         return self.user
+    def __str__(self):
+        return self.user
 
-# class Post(models.Model):
-#     author = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-#     title=models.CharField(max_length=300)
-#     video_file=models.FileField(upload_to='videos/')
-#     created_at = models.DateTimeField(auto_now_add=True)
-    
-
-#     @property
-#     def comment_count(self):
-#         return self.comments.count()
-    
-#     @property
-#     def comments(self):
-#         return list(self.comments.order_by("created_on"))
-    
-#     @property
-#     def like_count(self):
-#         return self.likes.count()
-
-    
-#     @property
-#     def liked_by_user(self):
-#         return [like.user for like in self.likes.all()]
-    
-#     @property
-#     def files(self):
-#         return self.upload()
-
-
-#     def __str__(self) -> str:
-#         return self.title
+class Post(models.Model):
+    author = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    title=models.CharField(max_length=300)
+    video_file=models.FileField(upload_to='videos/')
+    created_at = models.DateTimeField(auto_now_add=True)
     
 
-# #           i will comment ,like_count,liked_by_user and files propertys
-#         #   i will create like,comment,follow,file classes
+    @property
+    def comment_count(self):
+        return self.comments.count()
+    
+    @property
+    def comments(self):
+        return list(self.comments.order_by("created_on"))
+    
+    @property
+    def like_count(self):
+        return self.likes.count()
 
-# class Like(models.Model):
-#     user = models.ForeignKey(
-#         NormalUser, on_delete=models.CASCADE, related_name='likes'
-#     )
-#     post = models.ForeignKey(
-#         Post, on_delete=models.CASCADE, related_name='likes'
-#     )
-#     # created_at = models.DateTimeField(auto_now_add=True)
-#     # updated_at = models.DateTimeField(auto_now=True)
-
-#     def __str__(self):
-#         return f'{self.user} liked {self.post}'
-
-#     class Meta:
-#         unique_together = ('user', 'post')
+    
+    @property
+    def liked_by_user(self):
+        return [like.user for like in self.likes.all()]
+    
+    @property
+    def files(self):
+        return self.upload()
 
 
-# class Follow(models.Model):
-#     followers = models.ForeignKey(
-#         Teacher, on_delete=models.CASCADE, related_name='followers'
-#     )
-#     followings = models.ForeignKey(
-#         NormalUser, on_delete=models.CASCADE, related_name='followings'  
-#     )
-#     created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self) -> str:
+        return self.title
     
 
-#     def __str__(self):
-#         return f'{self.followers} followed by {self.followings}'
+#           i will comment ,like_count,liked_by_user and files propertys
+        #   i will create like,comment,follow,file classes
 
-#     class Meta:
-#         unique_together = ('followers', 'followings')
+class Like(models.Model):
+    user = models.ForeignKey(
+        NormalUser, on_delete=models.CASCADE, related_name='likes'
+    )
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name='likes'
+    )
+    # created_at = models.DateTimeField(auto_now_add=True)
+    # updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return f'{self.user} liked {self.post}'
 
-# class Comment(models.Model):
-#     author=models.ForeignKey(NormalUser, on_delete=models.CASCADE, related_name='author')
-#     definition=models.CharField(max_length=200)
-#     post=models.ForeignKey(Post, on_delete=models.CASCADE)
-#     create_at=models.DateTimeField(auto_created=True)
-
-
-#     class Meta:
-#         ordering = ['create_at']
-
-
-#     def __str__(self) -> str:
-#         return f"{self.post} commented by {self.author}"
+    class Meta:
+        unique_together = ('user', 'post')
 
 
-# class Message(models.Model):
-#     author_message=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='send_message')
-#     recipient=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='accepted_message')
-#     content=models.TextField()
-#     sent_time=models.DateTimeField(auto_now_add=True)
+class Follow(models.Model):
+    followers = models.ForeignKey(
+        Teacher, on_delete=models.CASCADE, related_name='followers'
+    )
+    followings = models.ForeignKey(
+        NormalUser, on_delete=models.CASCADE, related_name='followings'  
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+
+    def __str__(self):
+        return f'{self.followers} followed by {self.followings}'
+
+    class Meta:
+        unique_together = ('followers', 'followings')
+
+
+class Comment(models.Model):
+    author=models.ForeignKey(NormalUser, on_delete=models.CASCADE, related_name='author')
+    definition=models.CharField(max_length=200)
+    post=models.ForeignKey(Post, on_delete=models.CASCADE)
+    create_at=models.DateTimeField(auto_created=True)
+
+
+    class Meta:
+        ordering = ['create_at']
+
+
+    def __str__(self) -> str:
+        return f"{self.post} commented by {self.author}"
+
+
+class Message(models.Model):
+    author_message=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='send_message')
+    recipient=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='accepted_message')
+    content=models.TextField()
+    sent_time=models.DateTimeField(auto_now_add=True)
