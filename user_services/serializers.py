@@ -38,3 +38,8 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model=Message
         fields=('id','author_message','recipient','content','sent_time')
+
+class FileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=File
+        fields=('post','file')
