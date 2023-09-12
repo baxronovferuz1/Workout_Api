@@ -32,7 +32,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('user_services/',include('user_services.urls')),
+    path('user_services/',include('user_services.urls')),
     path('user_confirmation/', include('user_check.urls')),
     path("docs/", schema_view.with_ui("swagger", cache_timeout=0), name="docs"),
     path("docs2/", schema_view.with_ui("redoc", cache_timeout=0), name="docs2"),
