@@ -97,7 +97,7 @@ class Post(models.Model):
     
     @property
     def files(self):
-        return self.upload()
+        return self.file()
 
 
     def __str__(self) -> str:
@@ -106,6 +106,7 @@ class Post(models.Model):
 
 #           i will comment ,like_count,liked_by_user and files propertys
         #   i will create like,comment,follow,file classes
+
 
 class Like(models.Model):
     user = models.ForeignKey(
@@ -123,6 +124,14 @@ class Like(models.Model):
     class Meta:
         unique_together = ('user', 'post')
 
+
+
+
+class File(models.Model):
+    post=models.ForeignKey(Post, on_delete=models.CASCADE, blank=True)
+    file=models.FileField(upload_to="static", blank=True, null=True)
+
+    
 
 class Follow(models.Model):
     followers = models.ForeignKey(
