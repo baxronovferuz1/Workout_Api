@@ -46,7 +46,7 @@ from django.conf import settings
 
 
 class Teacher(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     bio=models.TextField(null=True,blank=True)
     profile_photo=models.ImageField(upload_to='profile_photos/', blank=True, null=True)
 
@@ -58,7 +58,7 @@ class Teacher(models.Model):
 
 
 class NormalUser(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     profile_photo=models.ImageField(upload_to='profile_photos/', blank=True, null=True)
     
     # following = models.ManyToManyField(Teacher, related_name='followers')
