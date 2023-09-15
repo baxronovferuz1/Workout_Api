@@ -22,3 +22,9 @@ twilio==7.17.0
 urllib3==2.0.4
 django-phonenumbers==1.0.1
 python-decouple==3.8
+black==23.9.1
+click==8.1.7 
+mypy-extensions==1.0.0 
+pathspec==0.11.2 
+platformdirs==3.10.0 
+tomli==2.0.1
