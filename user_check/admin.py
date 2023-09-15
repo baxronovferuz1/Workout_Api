@@ -7,7 +7,7 @@ class UserModel(admin.ModelAdmin):
 
 
 class UserConfirmationAdmin(admin.ModelAdmin):
-    list_display = ("id", )
+    list_display = ("id",)
 
 
 admin.site.register(User, UserModel)

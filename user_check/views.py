@@ -11,8 +11,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from code_share.utils import send_email, send_phone_notification
-from .serializers import SignUpSerializer, ChangeUserInformationSerializer, MyTokenObtainPairSerializer, \
-    CustomTokenRefreshSerializer, LogoutSerializer
+from .serializers import (
+    SignUpSerializer,
+    ChangeUserInformationSerializer,
+    MyTokenObtainPairSerializer,
+    CustomTokenRefreshSerializer,
+    LogoutSerializer,
+)
 from .models import User, CODE_VERIFIED, DONE, VIA_EMAIL, VIA_PHONE
 
 
@@ -26,36 +31,32 @@ class CustomTokenRefreshView(TokenRefreshView):
 
 class LogoutView(GenericAPIView):
     serializer_class = LogoutSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=self.request.data)
         serializer.is_valid(raise_exception=True)
         try:
-            refresh_token = self.request.data['refresh']
+            refresh_token = self.request.data["refresh"]
             token = RefreshToken(refresh_token)
             token.blacklist()
-            data = {
-                'success': True,
-                "message": "You are logged out"
-            }
+            data = {"success": True, "message": "You are logged out"}
             return Response(data=data, status=status.HTTP_205_RESET_CONTENT)
         except TokenError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class CreateUserView(CreateAPIView):
     queryset = User.objects.all()
-    permission_classes = (permissions.AllowAny, )
+    permission_classes = (permissions.AllowAny,)
     serializer_class = SignUpSerializer
 
 
 class VerifyApiView(APIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
-        user, code = self.request.user, self.request.data.get('code')
+        user, code = self.request.user, self.request.data.get("code")
         # user = self.request.user
         # code = self.request.data.get('code')
         self.check_verify(user, code)
@@ -64,16 +65,18 @@ class VerifyApiView(APIView):
                 "success": True,
                 "auth_status": user.auth_status,
                 "access": user.tokens()["access"],
-                "refresh": user.tokens()["refresh"]
-            }, status=200)
+                "refresh": user.tokens()["refresh"],
+            },
+            status=200,
+        )
 
     @staticmethod
     def check_verify(user, code):
-        verifies = user.verify_codes.filter(expiration_time__gte=datetime.now(), code=code, is_confirmed=False)
+        verifies = user.verify_codes.filter(
+            expiration_time__gte=datetime.now(), code=code, is_confirmed=False
+        )
         if not verifies.exists():
-            data = {
-                'message': "Code is incorrect or expired"
-            }
+            data = {"message": "Code is incorrect or expired"}
             raise ValidationError(data)
         verifies.update(is_confirmed=True)
         if user.auth_status not in DONE:
@@ -83,7 +86,7 @@ class VerifyApiView(APIView):
 
 
 class GetNewVerification(APIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
         user = self.request.user
@@ -100,16 +103,13 @@ class GetNewVerification(APIView):
                 "message": "You need to enter email or phone_number",
             }
             raise ValidationError(data)
-        return Response(
-            {
-                "success": True
-            }
-        )
-
+        return Response({"success": True})
 
     @staticmethod
     def check_verification(user):
-        verifies = user.verify_codes.filter(expiration_time__gte=datetime.now(), is_confirmed=False)
+        verifies = user.verify_codes.filter(
+            expiration_time__gte=datetime.now(), is_confirmed=False
+        )
         if verifies.exists():
             data = {
                 "message": "You need to wait over expiration time",
@@ -118,9 +118,9 @@ class GetNewVerification(APIView):
 
 
 class ChangeUserView(UpdateAPIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     serializer_class = ChangeUserInformationSerializer
-    http_method_names = ['patch', 'put']
+    http_method_names = ["patch", "put"]
 
     def get_object(self):
         return self.request.user
@@ -132,5 +132,6 @@ class ChangeUserView(UpdateAPIView):
             data={
                 "detail": "Updated successfully",
                 "auth_status": self.request.user.auth_status,
-            }, status=200
+            },
+            status=200,
         )
