@@ -87,7 +87,7 @@ class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated]
 
-    def perform_class(self, serializer):
+    def perform_create(self, serializer):
         return serializer.save(author_message=self.request.user)
 
     def get_queryset(self):
